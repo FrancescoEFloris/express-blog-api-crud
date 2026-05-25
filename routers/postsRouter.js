@@ -1,28 +1,14 @@
 import express from "express";
 import posts from "../data/posts.js";
+import { index, show, remove } from "../controllers/postsControllers.js";
 
 const postsRouter = express.Router();
 
-// Index: mostra la tutta la lista
-postsRouter.get("/", (request, response) => {
-    response.json(posts);
-});
+// Index:
+postsRouter.get("/", (index));
 
-// Show: mostra solo quello che sto cercando
-postsRouter.get("/:id", (request, response) => {
-    const id = request.params.id;
-    const idNum = Number(id);
-    if (isNaN(idNum) || idNum <= 0) {
-        response
-            .status(404)
-            .json({ error: "Id not Found" })
-        return;
-    }
-    const thisPost = posts.find(post => {
-        return post.id === idNum
-    });
-    response.json(thisPost)
-});
+// Show:
+postsRouter.get("/:id", (show));
 
 //Create:
 postsRouter.post("/", (request, response) => {
@@ -33,39 +19,10 @@ postsRouter.post("/", (request, response) => {
 postsRouter.put("/:id", (request, response) => {
     const id = request.params.id;
     const idNum = Number(id);
-    // const thisPost = posts.find(post => {
-    //    return post.id === idNum
-    // });
-    // const modifiedPost =
-
     response.json({ messagge: "Update request" })
 });
 
-postsRouter.delete("/:id", (request, response) => {
-    const id = request.params.id;
-    const idNum = Number(id);
-    if (isNaN(idNum) || idNum <= 0) {
-        response
-            .status(404)
-            .json({ error: "Id not Found" })
-        return;
-    }
-
-    const thisPost = posts.find(post => {
-        return post.id === idNum
-    });
-
-    if (!thisPost) {
-        response
-            .status(404)
-            .json({ error: "Post not Found" });
-        return;
-    }
-
-    const thisIndex = posts.indexOf(thisPost)
-    posts.splice(thisIndex, 1);
-
-    response.json({ messagge: "Post Deleted" })
-});
+//Delete:
+postsRouter.delete("/:id", (remove));
 
 export default postsRouter;
