@@ -1,6 +1,6 @@
 import express from "express";
 import posts from "../data/posts.js";
-import { index, show, remove, create } from "../controllers/postsControllers.js";
+import { index, show, remove, update, create } from "../controllers/postsControllers.js";
 
 const postsRouter = express.Router();
 
@@ -11,11 +11,7 @@ postsRouter.get("/", (index));
 postsRouter.get("/:id", (show));
 
 //Update:
-postsRouter.put("/:id", (request, response) => {
-    const id = request.params.id;
-    const idNum = Number(id);
-    response.json({ messagge: "Update request" })
-});
+postsRouter.put("/:id", (update));
 
 //Create:
 postsRouter.post("/", (create));

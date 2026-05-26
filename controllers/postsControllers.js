@@ -71,6 +71,36 @@ function create(request, response) {
     }
 };
 
+//Update:
+function update(request, response) {
+    const id = request.params.id;
+    const idNum = Number(id);
+    const thisPost = posts.find(post => post.id === idNum);
+    if (!thisPost) {
+        response
+            .status(404)
+            .json({ error: "Post not Found" });
+        return;
+    }
+
+    const { title, content, image, tags, slug, published, prep_time } = request.body;
+    const thisIndex = posts.indexOf(thisPost);
+    const updatedPost = {
+        ...thisPost,
+        title: title || thisPost.title,
+        content: content || thisPost.content,
+        image: image || thisPost.image,
+        tags: tags || thisPost.tags,
+        slug: slug || thisPost.slug,
+        published: published !== undefined ? published : thisPost.published,
+        prep_time: prep_time || thisPost.prep_time
+    };
+    posts[thisIndex] = updatedPost;
+    response
+        .status(200)
+        .json({ message: "Post aggiornato con successo" });
+};
+
 //Delete:
 function remove(request, response) {
     const id = request.params.id;
@@ -105,5 +135,6 @@ export {
     index,
     show,
     create,
+    update,
     remove
 };
