@@ -32,7 +32,43 @@ function show(request, response) {
     const thisPost = posts.find(post => {
         return post.id === idNum
     });
+    if (!thisPost) {
+        response
+            .status(404)
+            .json({ error: "Post not Found" });
+        return;
+    }
+
     response.json(thisPost)
+};
+
+//Create:
+function create(request, response) {
+    const createId = posts[posts.length - 1].id + 1;
+    const { title, content, image, tags, slug, published, prep_time } = request.body;
+
+    if (!title || !content) {
+        response
+            .status(400)
+            .json({ error: "Title or Content missing" });
+        return;
+    } else {
+        const newPost = {
+            id: createId,
+            title,
+            content,
+            image: image || "/imgs/posts/placeHolder.jpg",
+            tags: tags || [],
+            slug: slug || title.toLowerCase(), // se metti spazi o simboli nel titolo devi vergognarti
+            published: true,
+            prep_time: Number(prep_time) || 0,
+            created_at: Date.now(),
+        };
+        posts.push(newPost);
+        response
+            .status(201)
+            .json({ message: "Post received!", });
+    }
 };
 
 //Delete:
@@ -62,11 +98,12 @@ function remove(request, response) {
 
     response
         .status(204)
-        .json({ messagge: "Post Deleted" })
+        .json({ message: "Post Deleted" })
 };
 
 export {
     index,
     show,
+    create,
     remove
 };
