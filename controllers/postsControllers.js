@@ -6,6 +6,7 @@ function index(request, response) {
 
     if (!filteredTag) {
         response.json(posts);
+        return;
     } else {
         const filteredPosts = posts.filter(post => {
             for (let i = 0; i < post.tags.length; i++) {
@@ -15,31 +16,14 @@ function index(request, response) {
             }
             return false;
         });
-        response.json(filteredPosts);
+        response
+            .json(filteredPosts);
     }
 }
 
 //Show:
 function show(request, response) {
-    const id = request.params.id;
-    const idNum = Number(id);
-    if (isNaN(idNum) || idNum <= 0) {
-        response
-            .status(400)
-            .json({ error: "Id not Found" })
-        return;
-    }
-    const thisPost = posts.find(post => {
-        return post.id === idNum
-    });
-    if (!thisPost) {
-        response
-            .status(404)
-            .json({ error: "Post not Found" });
-        return;
-    }
-
-    response.json(thisPost)
+    response.json(request.thisPost);
 };
 
 //Create:
@@ -73,18 +57,10 @@ function create(request, response) {
 
 //Update:
 function update(request, response) {
-    const id = request.params.id;
-    const idNum = Number(id);
-    const thisPost = posts.find(post => post.id === idNum);
-    if (!thisPost) {
-        response
-            .status(404)
-            .json({ error: "Post not Found" });
-        return;
-    }
-
-    const { title, content, image, tags, slug, published, prep_time } = request.body;
+    const thisPost = request.thisPost;
     const thisIndex = posts.indexOf(thisPost);
+    const { title, content, image, tags, slug, published, prep_time } = request.body;
+
     const updatedPost = {
         ...thisPost,
         title: title || thisPost.title,
@@ -93,43 +69,22 @@ function update(request, response) {
         tags: tags || thisPost.tags,
         slug: slug || thisPost.slug,
         published: published !== undefined ? published : thisPost.published,
-        prep_time: prep_time || thisPost.prep_time
+        prep_time: prep_time !== undefined ? Number(prep_time) : thisPost.prep_time
     };
     posts[thisIndex] = updatedPost;
-    response
-        .status(200)
-        .json({ message: "Post aggiornato con successo" });
+
+    response.status(200).json({ message: "Post aggiornato con successo" });
 };
 
 //Delete:
 function remove(request, response) {
-    const id = request.params.id;
-    const idNum = Number(id);
-    if (isNaN(idNum) || idNum <= 0) {
-        response
-            .status(400)
-            .json({ error: "Id not Found" })
-        return;
-    }
+    const thisPost = request.thisPost;
+    const thisIndex = posts.indexOf(thisPost);
 
-    const thisPost = posts.find(post => {
-        return post.id === idNum
-    });
-
-    if (!thisPost) {
-        response
-            .status(404)
-            .json({ error: "Post not Found" });
-        return;
-    }
-
-    const thisIndex = posts.indexOf(thisPost)
     posts.splice(thisIndex, 1);
 
-    response
-        .status(204)
-        .json({ message: "Post Deleted" })
-};
+    response.status(204);
+}
 
 export {
     index,
